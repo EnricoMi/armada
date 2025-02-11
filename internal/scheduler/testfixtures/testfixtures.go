@@ -107,7 +107,7 @@ var (
 	// Has to be consistent since creating one involves generating a random key.
 	// If this key isn't consistent, scheduling keys generated are not either.
 	// We use the all-zeros key here to ensure scheduling keys are cosnsitent between tests.
-	SchedulingKeyGenerator = schedulerobjects.NewSchedulingKeyGeneratorWithKey(make([]byte, 32))
+	SchedulingKeyGenerator = internaltypes.NewSchedulingKeyGeneratorWithKey(make([]byte, 32))
 	// Used for job creation.
 	JobDb = NewJobDb(TestResourceListFactory)
 )
@@ -307,7 +307,9 @@ func WithNodeTypeNodes(nodeType *internaltypes.NodeType, nodes []*internaltypes.
 			node.GetPool(),
 			node.GetTaints(),
 			node.GetLabels(),
+			false,
 			node.GetTotalResources(),
+			node.GetAllocatableResources(),
 			node.GetUnallocatableResources(),
 			node.AllocatableByPriority,
 			node.AllocatedByQueue,
@@ -329,7 +331,9 @@ func WithIdNodes(nodeId string, nodes []*internaltypes.Node) []*internaltypes.No
 			node.GetPool(),
 			node.GetTaints(),
 			node.GetLabels(),
+			false,
 			node.GetTotalResources(),
+			node.GetAllocatableResources(),
 			node.GetUnallocatableResources(),
 			node.AllocatableByPriority,
 			node.AllocatedByQueue,
@@ -350,7 +354,9 @@ func WithIndexNode(idx uint64, node *internaltypes.Node) *internaltypes.Node {
 		node.GetPool(),
 		node.GetTaints(),
 		node.GetLabels(),
+		false,
 		node.GetTotalResources(),
+		node.GetAllocatableResources(),
 		node.GetUnallocatableResources(),
 		node.AllocatableByPriority,
 		node.AllocatedByQueue,
@@ -743,6 +749,8 @@ func TestSimpleNode(id string) *internaltypes.Node {
 		"",
 		nil,
 		nil,
+		false,
+		internaltypes.ResourceList{},
 		internaltypes.ResourceList{},
 		nil,
 		nil,
@@ -765,6 +773,7 @@ func TestNode(priorities []int32, resources map[string]resource.Quantity) *inter
 			TestHostnameLabel:                  id,
 			schedulerconfiguration.NodeIdLabel: id,
 		},
+		rl,
 		rl,
 		map[int32]internaltypes.ResourceList{},
 		internaltypes.NewAllocatableByPriorityAndResourceType(priorities, rl))
