@@ -14,12 +14,13 @@ RUN set -ex && \
     apt install -y bash curl && \
     curl -s -O https://downloads.lightbend.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.deb && \
     apt install -y ./scala-${SCALA_VERSION}.deb && \
-    curl -s -L -O https://github.com/sbt/sbt/releases/download/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz && \
-    tar -C / -xzvf ./sbt-${SBT_VERSION}.tgz && \
+    curl -s -L -O https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz && \
+    tar -C / -xzvf apache-maven-*-bin.tar.gz && \
+    mv /apache-maven-*/ /mvn && \
     apt-get clean && \
-    rm -rf scala-${SCALA_VERSION}.deb sbt-${SBT_VERSION}.tgz /var/lib/apt/lists/*
+    rm -rf scala-${SCALA_VERSION}.deb apache-maven-*-bin.tar.gz /var/lib/apt/lists/*
 
-ENV PATH="/sbt/bin:$PATH"
+ENV PATH="/mvn/bin:$PATH"
 COPY scripts/build-scala-client.sh /
 RUN chmod +x /build-scala-client.sh
 
